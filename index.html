@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="VELORA — a thoughtful, offline-first record management workspace." >
+  <title>VELORA — Record Management Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" >
+  <link rel="stylesheet" href="css/style.css?v=velora-20261026-final">
+  <script src="js/storage.js?v=velora-20261026-final" defer></script>
+  <script src="js/db.js?v=velora-20261026-final" defer></script>
+  <script src="js/app.js?v=velora-20261026-final" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#" aria-label="VELORA home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"> <path d="M7 8.5 16 24 25 8.5M11.5 8.5h9"/> </svg>
+        </span>
+        <span class="brand-word">velora<span>.</span></span>
+      </a>
+
+      <div class="workspace-switcher">
+        <span class="workspace-avatar">V</span>
+        <span class="workspace-meta">
+          <strong>Personal workspace</strong>
+          <small>Free workspace</small>
+        </span>
+        <span class="switcher-chevron">⌄</span>
+      </div>
+
+      <p class="sidebar-label">WORKSPACE</p>
+      <nav class="sidebar-nav" aria-label="Workspace">
+        <button class="nav-link is-active" data-view="dashboard" type="button" >
+          <span class="nav-icon">◫</span>
+          <span>Overview</span>
+          <span class="nav-indicator"></span>
+        </button>
+
+        <button class="nav-link" data-view="records" type="button" >
+          <span class="nav-icon">▤</span>
+          <span>All records</span>
+          <span class="nav-count" id="nav-record-count">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+      <p class="sidebar-label">YOUR SPACE</p>
+      <div class="sidebar-note">
+        <span class="sidebar-note-icon">✳</span>
+        <div>
+          <strong>A little clarity goes a long way.</strong>
+          <p>Keep the important things in one calm, organized place.</p>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="local-storage-card">
+          <span class="storage-check">✓</span>
+          <div>
+            <strong>Stored on this device</strong>
+            <small>Your records stay private</small>
+          </div>
+          <span class="status-dot"></span>
+        </div>
+
+        <div class="profile-row">
+          <span class="profile-avatar">Y</span>
+          <span class="profile-meta">
+            <strong>Your workspace</strong>
+            <small>Personal account</small>
+          </span>
+          <button class="profile-more" id="utility-button" type="button" aria-label="More data options" title="More options" > ••• </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="mobile-topbar">
+      <a class="brand" href="#" aria-label="VELORA home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 32 32"> <path d="M7 8.5 16 24 25 8.5M11.5 8.5h9"/> </svg>
+        </span>
+        <span class="brand-word">velora<span>.</span></span>
+      </a>
+
+      <div class="mobile-actions">
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Toggle theme" >
+          <svg class="sun-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24"> <path d="M20.8 14.2A8.5 8.5 0 0 1 9.8 3.2 8.7 8.7 0 1 0 20.8 14.2Z"/> </svg>
+        </button>
+
+        <button class="icon-button mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" >
+          <svg viewBox="0 0 24 24"> <path d="M4 7h16M4 12h16M4 17h16"/> </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobile-menu" hidden>
+      <button class="mobile-nav-link is-active" data-view="dashboard" type="button" > ◫ &nbsp; Overview </button>
+      <button class="mobile-nav-link" data-view="records" type="button" > ▤ &nbsp; All records <span id="mobile-nav-count">0</span> </button>
+    </div>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <span>Workspace</span>
+          <span class="breadcrumb-slash">/</span>
+          <strong id="view-label">Overview</strong>
+        </div>
+
+        <div class="topbar-actions">
+          <span class="storage-indicator"> <span class="status-dot"></span> All changes saved </span>
+          <button class="icon-button desktop-theme-toggle" id="theme-toggle-desktop" type="button" aria-label="Switch theme" title="Toggle theme" >
+            <svg class="sun-icon" viewBox="0 0 24 24"> <circle cx="12" cy="12" r="4"/> <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3 1.42-1.42"/> </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24"> <path d="M20.8 14.2A8.5 8.5 0 0 1 9.8 3.2 8.7 8.7 0 1 0 20.8 14.2Z"/> </svg>
+          </button>
+          <button class="button button-primary top-create" id="top-create" type="button" > <span>＋</span> New record </button>
+        </div>
+      </header>
+
+      <div class="content-wrap">
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow"> <span class="eyebrow-line"></span> YOUR PERSONAL WORKSPACE </p>
+            <h1 id="page-title">A little more <em>organized.</em></h1>
+            <p class="welcome-copy" id="welcome-copy"> Your ideas, projects, and plans — all in one thoughtful place. </p>
+          </div>
+
+          <div class="welcome-date">
+            <span class="date-label">TODAY, AT A GLANCE</span>
+            <strong id="today-date">—</strong>
+            <span class="date-subtitle">Make room for what matters.</span>
+          </div>
+        </section>
+
+        <section class="stats-grid" aria-label="Record overview">
+          <article class="stat-card stat-total">
+            <div class="stat-top">
+              <span class="stat-label">Total records</span>
+              <span class="stat-icon icon-coral">▤</span>
+            </div>
+
+            <div class="stat-bottom">
+              <strong id="stat-total">—</strong>
+              <span class="stat-caption">Everything you've saved</span>
+            </div>
+            <span class="stat-decoration"></span>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">In progress</span>
+              <span class="stat-icon icon-blue">◷</span>
+            </div>
+
+            <div class="stat-bottom">
+              <strong id="stat-progress">—</strong>
+              <span class="stat-caption">Currently underway</span>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Completed</span>
+              <span class="stat-icon icon-green">✓</span>
+            </div>
+
+            <div class="stat-bottom">
+              <strong id="stat-completed">—</strong>
+              <span class="stat-caption">Successfully wrapped up</span>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Overdue</span>
+              <span class="stat-icon icon-gold">!</span>
+            </div>
+
+            <div class="stat-bottom">
+              <strong id="stat-overdue">—</strong>
+              <span class="stat-caption">Worth a second look</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="records-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow section-eyebrow">YOUR COLLECTION</p>
+              <h2 id="records-heading"> Recent records <span id="heading-count" class="heading-count">0</span> </h2>
+              <p class="section-subtitle" id="section-subtitle"> A clear view of what matters right now. </p>
+            </div>
+
+            <div class="heading-actions">
+              <button class="button button-secondary" id="export-button" type="button" > <svg viewBox="0 0 24 24"> <path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/> </svg> <span>Export</span> </button>
+              <button class="button button-primary" id="new-record-button" type="button" > <span>＋</span> New record </button>
+            </div>
+          </div>
+
+          <div class="toolbar" role="search">
+            <label class="search-box" for="search-input">
+              <svg viewBox="0 0 24 24"> <circle cx="10.8" cy="10.8" r="6.8"/> <path d="m16 16 4.5 4.5"/> </svg>
+              <input id="search-input" type="search" placeholder="Search by title..." autocomplete="off" >
+              <kbd>/</kbd>
+            </label>
+
+            <div class="filter-controls">
+              <label class="select-wrap">
+                <span class="sr-only">Filter by category</span>
+                <select id="category-filter">
+                  <option value="all">All categories</option>
+                </select>
+                <svg viewBox="0 0 24 24"> <path d="m7 10 5 5 5-5"/> </svg>
+              </label>
+
+              <label class="select-wrap">
+                <span class="sr-only">Filter by status</span>
+                <select id="status-filter">
+                  <option value="all">All statuses</option>
+                  <option value="TODO">To do</option>
+                  <option value="IN_PROGRESS">In progress</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+                <svg viewBox="0 0 24 24"> <path d="m7 10 5 5 5-5"/> </svg>
+              </label>
+
+              <label class="select-wrap sort-select">
+                <span class="sr-only">Sort records</span>
+                <select id="sort-select">
+                  <option value="date-desc">Newest first</option>
+                  <option value="date-asc">Oldest first</option>
+                  <option value="title-asc">Title A–Z</option>
+                  <option value="title-desc">Title Z–A</option>
+                </select>
+                <svg viewBox="0 0 24 24"> <path d="m7 10 5 5 5-5"/> </svg>
+              </label>
+
+              <button class="reset-button" id="reset-filters" type="button" hidden > Reset filters </button>
+            </div>
+          </div>
+
+          <div class="results-meta">
+            <span id="results-summary">Loading your records…</span>
+            <span class="results-meta-right">
+              LOCAL COLLECTION
+              <span class="meta-dot"></span>
+            </span>
+          </div>
+
+          <div class="loading-state" id="loading-state">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+
+          <div class="records-grid" id="records-grid" aria-live="polite" ></div>
+          <div class="empty-state" id="empty-state" hidden>
+            <div class="empty-illustration" aria-hidden="true">
+              <span class="empty-circle"></span>
+              <svg viewBox="0 0 88 88"> <rect x="22" y="17" width="44" height="54" rx="7"/> <path d="M32 32h24M32 42h24M32 52h15"/> </svg>
+              <span class="empty-spark spark-a">✳</span>
+              <span class="empty-spark spark-b">✦</span>
+            </div>
+
+            <h3 id="empty-title">A fresh page.</h3>
+            <p id="empty-copy"> Your collection is waiting. Add your first record and make this space yours. </p>
+            <button class="button button-primary" id="empty-create-button" type="button" > ＋ Create your first record </button>
+          </div>
+
+          <div class="pagination-row" id="pagination-row" hidden>
+            <span id="pagination-info">Showing 0–0 of 0</span>
+            <div class="pagination-controls">
+              <button class="page-button" id="previous-page" type="button" aria-label="Previous page" > ‹ </button>
+              <span class="page-number" id="page-number">1 / 1</span>
+              <button class="page-button" id="next-page" type="button" aria-label="Next page" > › </button>
+            </div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <div class="footer-brand">
+            <span class="footer-mark">v.</span>
+            <span> <strong>VELORA</strong> — Make space for what matters. </span>
+          </div>
+
+          <div class="footer-right">
+            <span> <span class="footer-status-dot"></span> Your data stays on this device </span>
+            <span class="footer-separator">·</span>
+            <span>Built with care</span>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="record-dialog" id="record-dialog" aria-labelledby="dialog-title" >
+    <form id="record-form" novalidate>
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow section-eyebrow" id="dialog-eyebrow"> ADD TO YOUR COLLECTION </p>
+          <h2 id="dialog-title">Create a record</h2>
+          <p class="dialog-description"> A few details are all it takes to get organized. </p>
+        </div>
+        <button class="icon-button dialog-close" id="dialog-close" type="button" aria-label="Close dialog" > × </button>
+      </div>
+
+      <div class="form-fields">
+        <input type="hidden" id="record-id">
+        <div class="form-field">
+          <label for="record-title"> Title <span class="required-mark">*</span> </label>
+          <input id="record-title" name="title" type="text" maxlength="100" placeholder="e.g. Website redesign" required >
+          <span class="field-hint"> Give your record a clear, memorable name. </span>
+          <span class="field-error" id="title-error"></span>
+        </div>
+
+        <div class="form-field">
+          <label for="record-description">Description</label>
+          <textarea id="record-description" name="description" rows="3" maxlength="1000" placeholder="Add a little context or a few important details..." ></textarea>
+          <span class="field-hint"> Optional · Up to 1,000 characters. </span>
+          <span class="field-error" id="description-error"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="record-category"> Category <span class="required-mark">*</span> </label>
+            <select id="record-category" name="category" required>
+              <option value="">Choose category</option>
+              <option>Work</option>
+              <option>Personal</option>
+              <option>Design</option>
+              <option>Development</option>
+              <option>Learning</option>
+              <option>Finance</option>
+              <option>Health</option>
+              <option>Other</option>
+            </select>
+            <span class="field-error" id="category-error"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="record-status"> Status <span class="required-mark">*</span> </label>
+            <select id="record-status" name="status" required>
+              <option value="TODO">To do</option>
+              <option value="IN_PROGRESS">In progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+            <span class="field-error" id="status-error"></span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="record-date"> Date <span class="required-mark">*</span> </label>
+          <input id="record-date" name="date" type="date" required >
+          <span class="field-hint"> Due date or the date associated with this record. </span>
+          <span class="field-error" id="date-error"></span>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <span class="form-note"> <span class="required-mark">*</span> Required fields </span>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-record" type="button" > Cancel </button>
+          <button class="button button-primary" id="save-record-button" type="submit" >
+            <span id="save-button-label">Save record</span>
+            <span class="button-spinner" id="save-spinner" hidden></span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-title" >
+    <div class="confirm-content">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24"> <path d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13M10 11v5m4-5v5"/> </svg>
+      </div>
+
+      <h2 id="confirm-title">Delete this record?</h2>
+      <p id="confirm-copy"> This record will be permanently removed from this device. This action cannot be undone. </p>
+      <div class="confirm-actions">
+        <button class="button button-secondary" id="cancel-delete" type="button" > Keep record </button>
+        <button class="button button-danger" id="confirm-delete" type="button" > Delete record </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="confirm-dialog" id="clear-dialog" aria-labelledby="clear-title" >
+    <div class="confirm-content">
+      <div class="confirm-icon confirm-icon-danger">
+        <svg viewBox="0 0 24 24"> <path d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13"/> </svg>
+      </div>
+      <h2 id="clear-title">Clear all records?</h2>
+      <p> This permanently deletes every record stored in this browser. Export your data first if you want a backup. </p>
+      <div class="confirm-actions">
+        <button class="button button-secondary" id="cancel-clear" type="button" > Cancel </button>
+        <button class="button button-danger" id="confirm-clear" type="button" > Clear everything </button>
+      </div>
+    </div>
+  </dialog>
+
+  <input type="file" id="import-file" accept=".json,application/json" hidden >
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true" ></div>
+  <div class="settings-popover" id="settings-popover" hidden>
+    <button id="import-button" type="button">
+      <span>↑</span>
+      <span> <strong>Import JSON</strong> <small>Restore a previous export</small> </span>
+    </button>
+
+    <button id="clear-all-button" type="button">
+      <span>⌫</span>
+      <span> <strong>Clear all records</strong> <small>Remove everything on this device</small> </span>
+    </button>
+  </div>
+</body>
+</html>
